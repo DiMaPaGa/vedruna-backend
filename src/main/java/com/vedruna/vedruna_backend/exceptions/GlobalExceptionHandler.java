@@ -7,6 +7,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    // Manejo de la excepción UsuarioNotFoundException
+    @ExceptionHandler(UsuarioNotFoundException.class)
+    public ResponseEntity<String> handleUsuarioNotFoundException(UsuarioNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
      // Maneja excepciones de tipo ComentarioNotFoundException
     @ExceptionHandler(ComentarioNotFoundException.class)
     public ResponseEntity<String> handleComentarioNotFound(ComentarioNotFoundException ex) {

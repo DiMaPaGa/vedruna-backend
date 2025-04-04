@@ -23,14 +23,30 @@ public class PublicacionController {
     @Autowired
     private PublicacionService publicacionService;
 
-     @PostMapping
-    public ResponseEntity<PublicacionDTO> crearPublicacion(@RequestBody PublicacionDTO publicacionDTO) {
-        PublicacionDTO created = publicacionService.crearPublicacion(publicacionDTO);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    @PostMapping
+    public ResponseEntity<?> crearPublicacion(@RequestBody PublicacionDTO publicacionDTO) {
+        try {
+            // Verificar si el DTO está vacío o mal formado
+            System.out.println("Recibiendo DTO: " + publicacionDTO);
+            if (publicacionDTO == null || publicacionDTO.getTitulo() == null || publicacionDTO.getComentario() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Faltan campos necesarios para la publicación.");
+            }
+
+            PublicacionDTO created = publicacionService.crearPublicacion(publicacionDTO);
+             // Log para ver el DTO creado
+        System.out.println("DTO creado: " + created);
+            
+            return new ResponseEntity<>(created, HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            // Si ocurre un error, loguear el error y devolver un mensaje adecuado
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la publicación.");
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PublicacionDTO> obtenerPublicacion(@PathVariable Long id) throws ResourceNotFoundException {
+    public ResponseEntity<PublicacionDTO> obtenerPublicacionPorId(@PathVariable Long id) throws ResourceNotFoundException {
         PublicacionDTO publicacionDTO = publicacionService.obtenerPublicacionPorId(id);
         return new ResponseEntity<>(publicacionDTO, HttpStatus.OK);
     }

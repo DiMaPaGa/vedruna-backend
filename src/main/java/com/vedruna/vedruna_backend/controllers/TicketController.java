@@ -1,21 +1,14 @@
 package com.vedruna.vedruna_backend.controllers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.vedruna.vedruna_backend.dto.TicketDTO;
 import com.vedruna.vedruna_backend.exceptions.TicketNotFoundException;
 import com.vedruna.vedruna_backend.services.TicketService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -34,11 +27,6 @@ public class TicketController {
     // Actualizar un ticket existente
     @PutMapping("/{id}")
     public ResponseEntity<TicketDTO> actualizarTicket(@PathVariable Long id, @RequestBody TicketDTO ticketDTO) {
-        if (ticketDTO == null) {
-            // Retorna una respuesta de error si el ticketDTO es null
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
         try {
             TicketDTO updatedTicket = ticketService.actualizarTicket(id, ticketDTO);
             return new ResponseEntity<>(updatedTicket, HttpStatus.OK);
@@ -71,5 +59,4 @@ public class TicketController {
         List<TicketDTO> ticketDTOs = ticketService.obtenerTicketsPorUsuarioOrdenadosPorFecha(userId);
         return new ResponseEntity<>(ticketDTOs, HttpStatus.OK);
     }
-    
 }

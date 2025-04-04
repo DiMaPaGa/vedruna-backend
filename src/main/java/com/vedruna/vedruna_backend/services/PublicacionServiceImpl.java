@@ -2,6 +2,8 @@ package com.vedruna.vedruna_backend.services;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +16,7 @@ import com.vedruna.vedruna_backend.persistance.repositories.PublicacionRepositor
 
 @Service
 public class PublicacionServiceImpl implements PublicacionService {
+    private static final Logger logger = LoggerFactory.getLogger(PublicacionServiceImpl.class);
 
     @Autowired
     private PublicacionRepository publicacionRepository;
@@ -23,12 +26,21 @@ public class PublicacionServiceImpl implements PublicacionService {
 
 
     @Transactional
-    @Override
-    public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
-        Publicacion publicacion = publicacionMapper.toEntity(publicacionDTO);
-        publicacion = publicacionRepository.save(publicacion);
-        return publicacionMapper.toDTO(publicacion);
-    }
+@Override
+public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
+    logger.info("Datos recibidos: {}", publicacionDTO);
+
+    Publicacion publicacion = publicacionMapper.toEntity(publicacionDTO);
+    logger.info("Entidad mapeada: {}", publicacion);
+
+    publicacion = publicacionRepository.save(publicacion);
+    logger.info("Publicación guardada: {}", publicacion);
+
+    PublicacionDTO createdDTO = publicacionMapper.toDTO(publicacion);
+    logger.info("DTO de la publicación creada: {}", createdDTO);
+
+    return createdDTO;
+}
 
 
     @Transactional(readOnly = true)
