@@ -13,4 +13,7 @@ public interface PublicacionService {
     PublicacionDTO obtenerPublicacionPorId(Long id) throws ResourceNotFoundException;
     List<PublicacionDTO> obtenerPublicacionesPorUsuario(String userId);
     List<PublicacionDTO> obtenerPublicacionesConLikePorUsuario(String userId);
+
+    // Nuevos métodos para obtener publicaciones públicas y privadas
+    List<PublicacionDTO> obtenerTodasLasPublicaciones(String userId);
 }

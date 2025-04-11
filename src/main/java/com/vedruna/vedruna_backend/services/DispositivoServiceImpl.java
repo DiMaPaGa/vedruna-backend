@@ -34,7 +34,7 @@ public class DispositivoServiceImpl implements DispositivoService {
     @Override
     @Transactional(readOnly = true)
     public List<DispositivoDTO> obtenerDispositivosPorUserId(String userId) {
-        return dispositivoRepository.findByUserId(userId)
+        return dispositivoRepository.findByUsuario_UserId(userId)
                 .stream()
                 .map(dispositivoMapper::toDTO)
                 .toList();

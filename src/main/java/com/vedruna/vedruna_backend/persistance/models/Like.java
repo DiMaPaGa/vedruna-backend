@@ -19,9 +19,14 @@ public class Like implements Serializable {
     @EmbeddedId
     private LikeId likeId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    private Usuario usuario;
+
     // Relación con la publicación que recibió el like
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "publicacion_id", nullable = false, insertable = false, updatable = false)  // Hibernate gestionará la relación
+    @JoinColumn(name = "publicacion_id", insertable = false, updatable = false)  // Hibernate gestionará la relación
     private Publicacion publicacion;
+
     
 }

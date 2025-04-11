@@ -1,7 +1,6 @@
 package com.vedruna.vedruna_backend.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vedruna.vedruna_backend.dto.ComentarioDTO;
 import com.vedruna.vedruna_backend.dto.ComentarioRequestDTO;
+import com.vedruna.vedruna_backend.exceptions.ComentarioNotFoundException;
 import com.vedruna.vedruna_backend.services.ComentarioService;
 
 @RestController
-@RequestMapping("/comentarios")
+@RequestMapping("/api/comentarios")
 public class ComentarioController {
 
     @Autowired
@@ -42,10 +42,11 @@ public class ComentarioController {
      }
  
      // Obtener un comentario por su ID
-     @GetMapping("/{id}")
-     public Optional<ComentarioDTO> obtenerComentarioPorId(@PathVariable Long id) {
-         return comentarioService.obtenerPorId(id);
-     }
+    @GetMapping("/{id}")
+    public ComentarioDTO obtenerComentarioPorId(@PathVariable Long id) {
+         return comentarioService.obtenerPorId(id)
+            .orElseThrow(() -> new ComentarioNotFoundException("Comentario con ID " + id + " no encontrado"));
+    }
  
      // Crear un nuevo comentario
      @PostMapping

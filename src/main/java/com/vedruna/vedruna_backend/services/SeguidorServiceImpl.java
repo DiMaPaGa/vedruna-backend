@@ -80,9 +80,9 @@ public class SeguidorServiceImpl implements SeguidorService {
         return seguidorRepository.countByIdSeguidorId(seguidorId);
     }
 
+    // Método para verificar si un usuario sigue a otro
     @Transactional(readOnly = true)
-    @Override
-    public boolean verificarSiUsuarioSigueA(String seguidorId, String seguidoId) {
+    public boolean esSeguidor(String seguidorId, String seguidoId) {
         return seguidorRepository.findByIdSeguidorIdAndIdSeguidoId(seguidorId, seguidoId).isPresent();
     }
     

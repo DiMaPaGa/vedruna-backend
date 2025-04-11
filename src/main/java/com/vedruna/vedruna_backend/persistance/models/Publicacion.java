@@ -2,6 +2,7 @@ package com.vedruna.vedruna_backend.persistance.models;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -13,6 +14,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -29,8 +32,9 @@ public class Publicacion implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    private Usuario autor;
 
     @Column(name = "image_url")
     private String imageUrl;
@@ -42,7 +46,7 @@ public class Publicacion implements Serializable {
     private String comentario;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "privacidad")
+    @Column(name = "privacidad",  nullable = false)
     private Privacidad privacidad = Privacidad.PUBLICA;
 
     @Column(name = "created_at")
@@ -50,7 +54,7 @@ public class Publicacion implements Serializable {
 
     // Relación con los "likes" (uno a muchos)
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Like> likes;
+    private List<Like> likes = new ArrayList<>(); 
 
     // Relación con los comentarios (uno a muchos)
     @OneToMany(mappedBy = "publicacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

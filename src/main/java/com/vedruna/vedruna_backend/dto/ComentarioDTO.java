@@ -18,5 +18,9 @@ public class ComentarioDTO {
     private Long comentarioPadreId; // Para comentarios anidados
     private LocalDateTime createdAt;
     private List<ComentarioDTO> respuestas; // Para respuestas anidadas
+
+      // Añadimos los campos para el autor del comentario
+      private String autorName; // Nombre del autor
+      private String autorProfileImageUrl; // URL de la imagen de perfil del autor
     
 }

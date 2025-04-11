@@ -21,9 +21,13 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private TicketMapper ticketMapper;
 
+    @Autowired
+    private UsuarioService usuarioService;  // Verificar que el usuario existe
+
     @Transactional
     @Override
     public TicketDTO crearTicket(TicketDTO ticketDTO) {
+        
         // Convertir el DTO a la entidad Ticket
         Ticket ticket = ticketMapper.ticketDTOToTicket(ticketDTO);
         ticket = ticketRepository.save(ticket); // Guardar en la base de datos
@@ -53,7 +57,7 @@ public class TicketServiceImpl implements TicketService {
     @Transactional(readOnly = true)
     @Override
     public List<TicketDTO> obtenerTicketsPorUsuario(String userId) {
-        List<Ticket> tickets = ticketRepository.findByUserId(userId);
+        List<Ticket> tickets = ticketRepository.findByAutorUserId(userId);
         return tickets.stream()
                 .map(ticketMapper::ticketToTicketDTO)
                 .toList();
@@ -62,7 +66,7 @@ public class TicketServiceImpl implements TicketService {
     @Transactional(readOnly = true)
     @Override
     public List<TicketDTO> obtenerTicketsPorUsuarioOrdenadosPorFecha(String userId) {
-        List<Ticket> tickets = ticketRepository.findByUserIdOrderByFechaCreacionDesc(userId);
+        List<Ticket> tickets = ticketRepository.findByAutorUserIdOrderByFechaCreacionDesc(userId);
         return tickets.stream()
                 .map(ticketMapper::ticketToTicketDTO)
                 .toList();

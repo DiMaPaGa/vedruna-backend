@@ -1,5 +1,7 @@
 package com.vedruna.vedruna_backend.services;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,40 +14,45 @@ import com.vedruna.vedruna_backend.persistance.repositories.UsuarioRepository;
 
 @Service
 public class UsuarioServiceImpl implements UsuarioService {
-    
+
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
     private UsuarioMapper usuarioMapper;
 
-    // Buscar un usuario por su userId (Google UID)
     @Override
-    @Transactional(readOnly = true) // Esto asegura que esta operación no realice modificaciones en la base de datos
+    @Transactional(readOnly = true)
     public UsuarioDTO obtenerUsuarioPorGoogleId(String userId) throws UsuarioNotFoundException {
-        // Buscar el usuario por su userId
-        Usuario usuario = usuarioRepository.findByUserId(userId);
+        // Buscar el usuario por su user_id
+        Optional<Usuario> optionalUsuario = usuarioRepository.findByUserId(userId);
 
-        // Si no se encuentra el usuario, lanzamos la excepción
-        if (usuario == null) {
-            throw new UsuarioNotFoundException("Usuario no encontrado con el ID: " + userId);
-        }
-
-        // Mapeamos el modelo de Usuario a UsuarioDTO
-        return usuarioMapper.toDTO(usuario);
+        // Si el usuario no existe, lanzar excepción
+    if (optionalUsuario.isEmpty()) {
+        throw new UsuarioNotFoundException("Usuario no encontrado con el ID: " + userId);
     }
 
-    // Crear un nuevo usuario
+    // Obtener el usuario del Optional
+    Usuario usuario = optionalUsuario.get();
+
+    // Convertir la entidad Usuario a UsuarioDTO
+    return usuarioMapper.toDTO(usuario);
+}
+
     @Override
-    @Transactional // La transacción es necesaria para guardar el usuario en la base de datos
+    @Transactional
     public UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO) {
-        // Convertimos el DTO a la entidad Usuario
+        // Verificar si el usuario ya existe
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByUserId(usuarioDTO.getUserId());
+        
+        if (usuarioExistente.isPresent()) {
+            return usuarioMapper.toDTO(usuarioExistente.get());
+        }
+        
+        // Si no existe, crear el usuario
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
-
-        // Guardamos el usuario en la base de datos
         Usuario savedUsuario = usuarioRepository.save(usuario);
-
-        // Devolvemos el DTO del usuario guardado
+        
         return usuarioMapper.toDTO(savedUsuario);
     }
 }

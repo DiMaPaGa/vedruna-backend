@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vedruna.vedruna_backend.dto.PublicacionDTO;
 import com.vedruna.vedruna_backend.exceptions.ResourceNotFoundException;
 import com.vedruna.vedruna_backend.services.PublicacionService;
+import com.vedruna.vedruna_backend.services.SeguidorService;
 
 @RestController
 @RequestMapping("/api/publicaciones")
@@ -22,6 +23,8 @@ public class PublicacionController {
 
     @Autowired
     private PublicacionService publicacionService;
+
+
 
     @PostMapping
     public ResponseEntity<?> crearPublicacion(@RequestBody PublicacionDTO publicacionDTO) {
@@ -62,5 +65,13 @@ public class PublicacionController {
         List<PublicacionDTO> publicaciones = publicacionService.obtenerPublicacionesConLikePorUsuario(userId);
         return new ResponseEntity<>(publicaciones, HttpStatus.OK);
     }
-    
+
+    // Ruta para obtener todas las publicaciones públicas y privadas
+    @GetMapping("/all/{userId}")
+    public ResponseEntity<List<PublicacionDTO>> obtenerTodasLasPublicaciones(@PathVariable String userId) {
+        // Delegar la lógica de obtener publicaciones al servicio
+        List<PublicacionDTO> publicaciones = publicacionService.obtenerTodasLasPublicaciones(userId);
+        return new ResponseEntity<>(publicaciones, HttpStatus.OK);
+    }
 }
+    

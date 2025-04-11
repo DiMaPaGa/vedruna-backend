@@ -12,7 +12,7 @@ import com.vedruna.vedruna_backend.persistance.models.Dispositivo;
 public interface DispositivoRepository extends JpaRepository<Dispositivo, Long> {
 
     // Buscar todos los dispositivos de un usuario específico
-    List<Dispositivo> findByUserId(String userId);
+    List<Dispositivo> findByUsuario_UserId(String userId);
 
     // Buscar un dispositivo por su expoPushToken (único)
     Optional<Dispositivo> findByExpoPushToken(String expoPushToken);

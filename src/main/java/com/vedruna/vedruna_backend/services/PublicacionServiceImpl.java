@@ -1,5 +1,6 @@
 package com.vedruna.vedruna_backend.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -8,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vedruna.vedruna_backend.dto.LikeDTO;
 import com.vedruna.vedruna_backend.dto.PublicacionDTO;
 import com.vedruna.vedruna_backend.exceptions.ResourceNotFoundException;
 import com.vedruna.vedruna_backend.mappers.PublicacionMapper;
+import com.vedruna.vedruna_backend.persistance.models.Privacidad;
 import com.vedruna.vedruna_backend.persistance.models.Publicacion;
 import com.vedruna.vedruna_backend.persistance.repositories.PublicacionRepository;
 
@@ -23,6 +26,12 @@ public class PublicacionServiceImpl implements PublicacionService {
 
     @Autowired
     private PublicacionMapper publicacionMapper;
+
+    @Autowired
+    private SeguidorService seguidorService; 
+
+    @Autowired
+    private LikeService likeService;  
 
 
     @Transactional
@@ -54,7 +63,7 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
     @Transactional(readOnly = true)
     @Override
     public List<PublicacionDTO> obtenerPublicacionesPorUsuario(String userId) {
-        List<Publicacion> publicaciones = publicacionRepository.findByUserId(userId);
+        List<Publicacion> publicaciones = publicacionRepository.findByAutor_UserId(userId);
         return publicaciones.stream()
                 .map(publicacionMapper::toDTO)
                 .toList();
@@ -67,6 +76,39 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
         return publicaciones.stream()
                 .map(publicacionMapper::toDTO)
                 .toList();
+    }
+
+    // Nuevos métodos para obtener las publicaciones
+    @Transactional(readOnly = true)
+    @Override
+    public List<PublicacionDTO> obtenerTodasLasPublicaciones(String userId) {
+        List<PublicacionDTO> publicaciones = new ArrayList<>();
+
+        // Obtener publicaciones públicas
+        List<Publicacion> publicacionesPublicas = publicacionRepository.findByPrivacidad(Privacidad.PUBLICA);
+        publicacionesPublicas.forEach(publicacion -> {
+            // Obtener los likes de la publicación
+            List<LikeDTO> likes = likeService.obtenerLikesDePublicacion(publicacion.getId());
+            // Mapear la publicación a DTO
+            PublicacionDTO dto = publicacionMapper.toDTO(publicacion);
+            // Añadir los likes al DTO
+            dto.setLikes(likes);
+            publicaciones.add(dto);
+        });
+
+        // Obtener las publicaciones privadas de los usuarios seguidos
+        List<Publicacion> publicacionesPrivadas = publicacionRepository.findByPrivacidad(Privacidad.PRIVADA);
+        for (Publicacion publicacion : publicacionesPrivadas) {
+            // Si el usuario es seguidor del autor de la publicación, añadirla
+            if (seguidorService.esSeguidor(userId, publicacion.getAutor().getUserId()) || publicacion.getAutor().getUserId().equals(userId)) {
+                List<LikeDTO> likes = likeService.obtenerLikesDePublicacion(publicacion.getId());
+                PublicacionDTO dto = publicacionMapper.toDTO(publicacion);
+                dto.setLikes(likes);
+                publicaciones.add(dto);
+            }
+        }
+
+        return publicaciones != null ? publicaciones : new ArrayList<>();
     }
     
 }

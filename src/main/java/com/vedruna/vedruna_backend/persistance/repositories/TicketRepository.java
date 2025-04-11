@@ -11,9 +11,9 @@ import com.vedruna.vedruna_backend.persistance.models.Ticket;
 public interface TicketRepository extends JpaRepository<Ticket, Long>  {
 
     // Buscar todos los tickets de un usuario específico
-    List<Ticket> findByUserId(String userId);
+    List<Ticket> findByAutorUserId(String userId);
 
     // Buscar todos los tickets de un usuario específico, ordenados por fecha de creación descendente
-    List<Ticket> findByUserIdOrderByFechaCreacionDesc(String userId);
+    List<Ticket> findByAutorUserIdOrderByFechaCreacionDesc(String userId);
     
 }

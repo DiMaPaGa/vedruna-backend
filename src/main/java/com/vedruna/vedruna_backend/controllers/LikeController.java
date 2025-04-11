@@ -19,7 +19,7 @@ import com.vedruna.vedruna_backend.services.LikeService;
 
 
 @RestController
-@RequestMapping("/likes")
+@RequestMapping("/api/likes")
 public class LikeController {
 
     @Autowired

@@ -33,8 +33,10 @@ public class Comentario implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+     // Relación con el autor del comentario (Usuario)
+     @ManyToOne(fetch = FetchType.LAZY)
+     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+     private Usuario autor;
 
     // Relación con la publicación comentada
     @ManyToOne(fetch = FetchType.LAZY)

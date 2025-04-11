@@ -12,5 +12,5 @@ public interface SeguidorService {
     List<SeguidorDTO> obtenerUsuariosSeguidosPorUsuario(String seguidorId);
     long contarSeguidores(String seguidoId);
     long contarSeguidosPorUsuario(String seguidorId);
-    boolean verificarSiUsuarioSigueA(String seguidorId, String seguidoId);
+    boolean esSeguidor(String seguidorId, String seguidoId);
 }

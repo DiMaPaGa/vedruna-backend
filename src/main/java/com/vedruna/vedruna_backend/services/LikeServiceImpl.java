@@ -31,30 +31,47 @@ public class LikeServiceImpl implements LikeService {
     private LikeMapper likeMapper;
 
     @Transactional
+    public Like obtenerOCrearLike(String userId, Long publicacionId) {
+        // Verifica si el like ya existe
+        Optional<Like> existingLike = likeRepository.findByLikeIdUserIdAndPublicacionId(userId, publicacionId);
+        if (existingLike.isPresent()) {
+            return existingLike.get(); // Si el like ya existe, lo retornamos
+        }
+        // Si no existe, creamos un nuevo like
+        Publicacion publicacion = publicacionRepository.findById(publicacionId)
+                .orElseThrow(() -> new LikeNotFoundException("Publicación no encontrada."));
+        Like nuevoLike = new Like();
+        nuevoLike.setLikeId(new LikeId(userId, publicacionId));
+        nuevoLike.setPublicacion(publicacion);
+        return likeRepository.save(nuevoLike); // Lo guardamos y lo retornamos
+    }
+
+    @Transactional
     @Override
     public LikeDTO darLike(LikeRequestDTO requestDTO) {
-        // Verifica si el like ya existe
+        // Verifica si ya existe el like antes de agregarlo
         Optional<Like> existingLike = likeRepository.findByLikeIdUserIdAndPublicacionId(requestDTO.getUserId(), requestDTO.getPublicacionId());
         if (existingLike.isPresent()) {
             throw new LikeAlreadyExistsException("El usuario ya ha dado like a esta publicación.");
         }
-
-        // Obtiene la publicación a la que se le va a dar like
+        
+        // Si no existe, se crea y guarda el like
         Publicacion publicacion = publicacionRepository.findById(requestDTO.getPublicacionId())
                 .orElseThrow(() -> new LikeNotFoundException("Publicación no encontrada."));
-
-        // Crea un nuevo like
-        Like nuevoLike = likeMapper.toEntity(requestDTO, publicacion);
+        Like nuevoLike = new Like();
+        nuevoLike.setLikeId(new LikeId(requestDTO.getUserId(), requestDTO.getPublicacionId()));
+        nuevoLike.setPublicacion(publicacion);
         likeRepository.save(nuevoLike);
+        
         return likeMapper.toDTO(nuevoLike);
     }
 
     @Transactional
     @Override
     public void quitarLike(String userId, Long publicacionId) {
-        // Crear el LikeId con ambos parámetros
+        // Usamos el LikeId para eliminar el like de la base de datos
         LikeId likeId = new LikeId(userId, publicacionId);
-        
+
         // Verifica si el like existe
         if (!likeRepository.existsById(likeId)) {
             throw new LikeNotFoundException("El like no existe.");

@@ -59,11 +59,5 @@ public class SeguidorController {
         long count = seguidorService.contarSeguidosPorUsuario(seguidorId);
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
-
-    @GetMapping("/verificar/{seguidorId}/{seguidoId}")
-    public ResponseEntity<Boolean> verificarSiSigueA(@PathVariable String seguidorId, @PathVariable String seguidoId) {
-        boolean sigue = seguidorService.verificarSiUsuarioSigueA(seguidorId, seguidoId);
-        return new ResponseEntity<>(sigue, HttpStatus.OK);
-    }
     
 }

@@ -3,11 +3,13 @@ package com.vedruna.vedruna_backend.persistance.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,13 +18,14 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "usuarios")
+//@Cacheable("usuarios")  // <-- Marca esta entidad para caché
 public class Usuario implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", nullable = false, unique = true)
     private String userId;  // Google UID
 
     @Column(nullable = false)
@@ -36,6 +39,11 @@ public class Usuario implements Serializable{
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();  // Fecha de creación (timestamp)
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     
 
