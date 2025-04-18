@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.vedruna.vedruna_backend.dto.HistoriaDTO;
-import com.vedruna.vedruna_backend.persistance.models.Historia;
+
 
 public interface HistoriaService {
     HistoriaDTO guardarHistoria(HistoriaDTO historiaDTO);

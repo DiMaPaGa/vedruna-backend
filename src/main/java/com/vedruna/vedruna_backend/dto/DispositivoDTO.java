@@ -14,7 +14,7 @@ public class DispositivoDTO {
 
     private Long id;
     private String userId; // Google UID
-    private String expoPushToken;
+    private String expoPushId;
     private LocalDateTime createdAt;
     
 }

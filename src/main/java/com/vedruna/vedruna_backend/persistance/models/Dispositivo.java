@@ -30,8 +30,8 @@ public class Dispositivo implements Serializable {
      @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
      private Usuario usuario;
 
-    @Column(name = "expo_push_token", nullable = false, unique = true)
-    private String expoPushToken;
+    @Column(name = "expo_push_id", nullable = false, unique = true)
+    private String expoPushId;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private java.time.LocalDateTime createdAt;

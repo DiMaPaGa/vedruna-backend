@@ -108,6 +108,8 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
             }
         }
 
+        publicaciones.sort((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt()));
+
         return publicaciones != null ? publicaciones : new ArrayList<>();
     }
     

@@ -42,17 +42,10 @@ public class DispositivoServiceImpl implements DispositivoService {
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<DispositivoDTO> obtenerDispositivoPorToken(String expoPushToken) {
-        return dispositivoRepository.findByExpoPushToken(expoPushToken)
+    public Optional<DispositivoDTO> obtenerDispositivoPorId(String expoPushId) {
+        return dispositivoRepository.findByExpoPushId(expoPushId)
                 .map(dispositivoMapper::toDTO);
     }
 
-    @Override
-    @Transactional
-    public void eliminarDispositivo(String expoPushToken) {
-        Dispositivo dispositivo = dispositivoRepository.findByExpoPushToken(expoPushToken)
-                .orElseThrow(() -> new DispositivoNotFoundException("Dispositivo con token " + expoPushToken + " no encontrado"));
-        dispositivoRepository.delete(dispositivo);
-    }
     
 }

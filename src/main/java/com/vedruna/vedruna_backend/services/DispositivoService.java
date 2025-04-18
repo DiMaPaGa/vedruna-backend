@@ -9,7 +9,6 @@ public interface DispositivoService {
 
     DispositivoDTO guardarDispositivo(DispositivoDTO dispositivoDTO);
     List<DispositivoDTO> obtenerDispositivosPorUserId(String userId);
-    Optional<DispositivoDTO> obtenerDispositivoPorToken(String expoPushToken);
-    void eliminarDispositivo(String expoPushToken);
+    Optional<DispositivoDTO> obtenerDispositivoPorId(String expoPushId);
     
 }

@@ -20,7 +20,7 @@ public class DispositivoMapper {
         DispositivoDTO dto = new DispositivoDTO();
         dto.setId(dispositivo.getId());
         dto.setUserId(dispositivo.getUsuario().getUserId());
-        dto.setExpoPushToken(dispositivo.getExpoPushToken());
+        dto.setExpoPushId(dispositivo.getExpoPushId());
         dto.setCreatedAt(dispositivo.getCreatedAt());
         return dto;
     }
@@ -33,7 +33,7 @@ public class DispositivoMapper {
             .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado con userId: " + dto.getUserId()));
 
         dispositivo.setUsuario(usuario); // ✅ Establece la relación
-        dispositivo.setExpoPushToken(dto.getExpoPushToken());
+        dispositivo.setExpoPushId(dto.getExpoPushId());
         dispositivo.setCreatedAt(dto.getCreatedAt());
         return dispositivo;
     }

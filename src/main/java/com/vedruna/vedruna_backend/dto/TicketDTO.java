@@ -17,6 +17,7 @@ public class TicketDTO {
     private String equipoClase;
     private String titulo;
     private String descripcion;
+    private String imageUrl;
     private LocalDateTime fechaCreacion;
     private EstadoTicket estado;
     

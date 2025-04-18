@@ -42,6 +42,9 @@ public class Ticket implements Serializable {
     @Column(name = "descripcion", length = 250, nullable = false)
     private String descripcion;
 
+    @Column(name = "image_url")
+    private String imageUrl; 
+
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 

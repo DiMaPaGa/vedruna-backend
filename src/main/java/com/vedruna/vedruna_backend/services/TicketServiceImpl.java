@@ -3,6 +3,7 @@ package com.vedruna.vedruna_backend.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +12,8 @@ import com.vedruna.vedruna_backend.exceptions.TicketNotFoundException;
 import com.vedruna.vedruna_backend.mappers.TicketMapper;
 import com.vedruna.vedruna_backend.persistance.models.Ticket;
 import com.vedruna.vedruna_backend.persistance.repositories.TicketRepository;
+
+
 
 @Service
 public class TicketServiceImpl implements TicketService {
@@ -24,6 +27,12 @@ public class TicketServiceImpl implements TicketService {
     @Autowired
     private UsuarioService usuarioService;  // Verificar que el usuario existe
 
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${app.admin-email}")
+    private String adminEmail;
+
     @Transactional
     @Override
     public TicketDTO crearTicket(TicketDTO ticketDTO) {
@@ -31,6 +40,18 @@ public class TicketServiceImpl implements TicketService {
         // Convertir el DTO a la entidad Ticket
         Ticket ticket = ticketMapper.ticketDTOToTicket(ticketDTO);
         ticket = ticketRepository.save(ticket); // Guardar en la base de datos
+
+        // 📨 Enviar email de aviso al admin
+        String subject = "Nuevo ticket creado";
+        String body = String.format(
+            "Se ha creado un nuevo ticket:\n\nTítulo: %s\nDescripción: %s\nEquipo: %s\nEstado: %s\n",
+            ticket.getTitulo(),
+            ticket.getDescripcion(),
+            ticket.getEquipoClase(),
+            ticket.getEstado()
+        );
+        emailService.sendEmail(adminEmail, subject, body);
+
         return ticketMapper.ticketToTicketDTO(ticket); // Convertir nuevamente a DTO y devolverlo
     }
 
@@ -42,6 +63,7 @@ public class TicketServiceImpl implements TicketService {
         ticket.setTitulo(ticketDTO.getTitulo());
         ticket.setDescripcion(ticketDTO.getDescripcion());
         ticket.setEquipoClase(ticketDTO.getEquipoClase());
+        ticket.setImageUrl(ticketDTO.getImageUrl());
         ticket.setEstado(ticketDTO.getEstado());
         ticket = ticketRepository.save(ticket); // Guardar el ticket actualizado
         return ticketMapper.ticketToTicketDTO(ticket); // Devolver el ticket actualizado en formato DTO

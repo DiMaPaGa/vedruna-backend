@@ -36,6 +36,7 @@ public class TicketMapper {
         ticketDTO.setEquipoClase(ticket.getEquipoClase());
         ticketDTO.setTitulo(ticket.getTitulo());
         ticketDTO.setDescripcion(ticket.getDescripcion());
+        ticketDTO.setImageUrl(ticket.getImageUrl());
         ticketDTO.setFechaCreacion(ticket.getFechaCreacion());
         ticketDTO.setEstado(ticket.getEstado());
         
@@ -60,6 +61,7 @@ public class TicketMapper {
         ticket.setEquipoClase(ticketDTO.getEquipoClase());
         ticket.setTitulo(ticketDTO.getTitulo());
         ticket.setDescripcion(ticketDTO.getDescripcion());
+        ticket.setImageUrl(ticketDTO.getImageUrl());
         ticket.setFechaCreacion(ticketDTO.getFechaCreacion());
         ticket.setEstado(ticketDTO.getEstado());
 

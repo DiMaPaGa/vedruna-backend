@@ -21,6 +21,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/dispositivos/**").permitAll() // Permitir acceso a /api/dispositivos
                 .requestMatchers("/api/comentarios/**").permitAll() // Permitir acceso a /api/comentarios
                 .requestMatchers("/api/tickets/**").permitAll() // Permitir acceso a /api/tickets
+                .requestMatchers("/api/email/enviar").permitAll() 
                 .anyRequest().authenticated() // Requiere autenticación en otros endpoints
             );
 

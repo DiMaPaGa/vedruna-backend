@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,19 +39,14 @@ public class DispositivoController {
         return ResponseEntity.ok(dispositivos);
     }
 
-    @GetMapping("/token/{expoPushToken}")
-    public ResponseEntity<DispositivoDTO> obtenerDispositivoPorToken(@PathVariable String expoPushToken) {
+    @GetMapping("/id/{expoPushId}")
+    public ResponseEntity<DispositivoDTO> obtenerDispositivoPorId(@PathVariable String expoPushId) {
         // Obtiene el dispositivo utilizando el servicio y lanza una excepción si no se encuentra
-        DispositivoDTO dispositivoDTO = dispositivoService.obtenerDispositivoPorToken(expoPushToken)
-                .orElseThrow(() -> new DispositivoNotFoundException("Dispositivo no encontrado con el expoPushToken: " + expoPushToken));
+        DispositivoDTO dispositivoDTO = dispositivoService.obtenerDispositivoPorId(expoPushId)
+                .orElseThrow(() -> new DispositivoNotFoundException("Dispositivo no encontrado con el expoPushId: " + expoPushId));
 
         return ResponseEntity.ok(dispositivoDTO);
     }
 
-    @DeleteMapping("/token/{expoPushToken}")
-    public ResponseEntity<Void> eliminarDispositivo(@PathVariable String expoPushToken) {
-        // Elimina el dispositivo utilizando el servicio. El servicio ya lanza una excepción si no se encuentra
-        dispositivoService.eliminarDispositivo(expoPushToken);
-        return ResponseEntity.noContent().build(); // Respuesta 204 cuando el dispositivo es eliminado con éxito
-    }
+
 }

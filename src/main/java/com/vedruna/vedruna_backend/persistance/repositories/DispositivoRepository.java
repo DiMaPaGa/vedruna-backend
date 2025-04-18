@@ -14,12 +14,9 @@ public interface DispositivoRepository extends JpaRepository<Dispositivo, Long> 
     // Buscar todos los dispositivos de un usuario específico
     List<Dispositivo> findByUsuario_UserId(String userId);
 
-    // Buscar un dispositivo por su expoPushToken (único)
-    Optional<Dispositivo> findByExpoPushToken(String expoPushToken);
+    // Buscar un dispositivo por su expoPushId (único)
+    Optional<Dispositivo> findByExpoPushId(String expoPushId);
 
-    // Eliminar un dispositivo por su expoPushToken
-    void deleteByExpoPushToken(String expoPushToken);
-
-
+    
     
 }
