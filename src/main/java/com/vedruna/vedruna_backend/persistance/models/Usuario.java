@@ -3,7 +3,6 @@ package com.vedruna.vedruna_backend.persistance.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

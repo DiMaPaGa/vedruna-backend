@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -31,6 +33,10 @@ public class Seguidor implements Serializable{
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(name = "seguido_id", referencedColumnName = "user_id", insertable = false, updatable = false)
     private Usuario seguido;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado",  nullable = false)
+    private Estado estado = Estado.PENDIENTE;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

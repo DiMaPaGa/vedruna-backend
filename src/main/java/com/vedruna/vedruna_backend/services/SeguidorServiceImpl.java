@@ -1,15 +1,17 @@
 package com.vedruna.vedruna_backend.services;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vedruna.vedruna_backend.dto.SeguidorDTO;
 import com.vedruna.vedruna_backend.exceptions.SeguidorNotFoundException;
 import com.vedruna.vedruna_backend.mappers.SeguidorMapper;
+import com.vedruna.vedruna_backend.persistance.models.Estado;
 import com.vedruna.vedruna_backend.persistance.models.Seguidor;
 import com.vedruna.vedruna_backend.persistance.models.SeguidorId;
 import com.vedruna.vedruna_backend.persistance.repositories.SeguidorRepository;
@@ -23,67 +25,75 @@ public class SeguidorServiceImpl implements SeguidorService {
     @Autowired
     private SeguidorMapper seguidorMapper;
 
-    @Transactional
-    @Override
-    public SeguidorDTO seguirUsuario(String seguidorId, String seguidoId) {
-        Seguidor seguidor = new Seguidor();
-        seguidor.setId(new SeguidorId(seguidorId, seguidoId));
-        seguidor = seguidorRepository.save(seguidor);
-        return seguidorMapper.toDTO(seguidor);
+    public Page<SeguidorDTO> obtenerSeguidores(String seguidoId, Estado estado, Pageable pageable) {
+        return seguidorRepository
+                .findByIdSeguidoIdAndEstado(seguidoId, estado, pageable)
+                .map(seguidorMapper::toDTO);
     }
 
-    @Transactional
     @Override
-    public void dejarDeSeguir(String seguidorId, String seguidoId) throws SeguidorNotFoundException {
-        // Create the composite key for the seguidor
-        SeguidorId id = new SeguidorId(seguidorId, seguidoId);
-
-        // Search for the seguidor in the database
-        Optional<Seguidor> seguidor = seguidorRepository.findById(id);
-
-        // If the seguidor doesn't exist, throw an exception
-        if (seguidor.isEmpty()) {
-            throw new SeguidorNotFoundException("El seguidor no existe para estos usuarios");
-        }
-
-        // Delete the seguidor from the database
-        seguidorRepository.delete(seguidor.get());
-    }
-
     @Transactional(readOnly = true)
-    @Override
-    public List<SeguidorDTO> obtenerSeguidoresPorUsuario(String seguidoId) {
-        List<Seguidor> seguidores = seguidorRepository.findByIdSeguidoId(seguidoId);
-        return seguidores.stream()
-                .map(seguidorMapper::toDTO)
-                .toList();
+    public Page<SeguidorDTO> obtenerSeguidos(String seguidorId, Estado estado, Pageable pageable) {
+        return seguidorRepository
+                .findByIdSeguidorIdAndEstado(seguidorId, estado, pageable)
+                .map(seguidorMapper::toDTO);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public List<SeguidorDTO> obtenerUsuariosSeguidosPorUsuario(String seguidorId) {
-        List<Seguidor> seguidos = seguidorRepository.findByIdSeguidorId(seguidorId);
-        return seguidos.stream()
-                .map(seguidorMapper::toDTO)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public long contarSeguidores(String seguidoId) {
-        return seguidorRepository.countByIdSeguidoId(seguidoId);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public long contarSeguidosPorUsuario(String seguidorId) {
-        return seguidorRepository.countByIdSeguidorId(seguidorId);
-    }
 
     // Método para verificar si un usuario sigue a otro
     @Transactional(readOnly = true)
+    @Override
     public boolean esSeguidor(String seguidorId, String seguidoId) {
         return seguidorRepository.findByIdSeguidorIdAndIdSeguidoId(seguidorId, seguidoId).isPresent();
     }
-    
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarSeguidores(String seguidoId, Estado estado) {
+        return seguidorRepository.countByIdSeguidoIdAndEstado(seguidoId, estado);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarSeguidos(String seguidorId, Estado estado) {
+        return seguidorRepository.countByIdSeguidorIdAndEstado(seguidorId, estado);
+    }
+
+    @Override
+    @Transactional
+    public void seguirUsuario(String seguidorId, String seguidoId) {
+        SeguidorId id = new SeguidorId(seguidorId, seguidoId);
+
+        if (seguidorRepository.existsById(id)) {
+            throw new SeguidorNotFoundException("Ya existe una solicitud o seguimiento entre estos usuarios.");
+        }
+
+        Seguidor seguidor = new Seguidor();
+        seguidor.setId(id);
+        seguidor.setEstado(Estado.PENDIENTE); // Inicialmente pendiente, por si es cuenta privada
+
+        seguidorRepository.save(seguidor);
+    }
+
+    @Override
+    @Transactional
+    public void dejarDeSeguir(String seguidorId, String seguidoId) {
+        if (!seguidorRepository.existsByIdSeguidorIdAndIdSeguidoId(seguidorId, seguidoId)) {
+            throw new SeguidorNotFoundException("No se encontró el seguimiento para eliminar.");
+        }
+        seguidorRepository.deleteByIdSeguidorIdAndIdSeguidoId(seguidorId, seguidoId);
+    }
+
+    @Override
+    @Transactional
+    public void aceptarSolicitud(String seguidorId, String seguidoId) {
+        Optional<Seguidor> optional = seguidorRepository.findByIdSeguidorIdAndIdSeguidoId(seguidorId, seguidoId);
+        if (optional.isPresent()) {
+            Seguidor seguidor = optional.get();
+            seguidor.setEstado(Estado.ACEPTADO);
+            seguidorRepository.save(seguidor);
+        } else {
+            throw new SeguidorNotFoundException("No existe ninguna solicitud de seguimiento pendiente.");
+        }
+    }
 }

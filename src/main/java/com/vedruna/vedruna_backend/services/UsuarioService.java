@@ -1,5 +1,7 @@
 package com.vedruna.vedruna_backend.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.vedruna.vedruna_backend.dto.UsuarioDTO;
@@ -12,4 +14,9 @@ UsuarioDTO obtenerUsuarioPorGoogleId(String userId) throws UsuarioNotFoundExcept
 
 // Crear un nuevo usuario
 UsuarioDTO crearUsuario(UsuarioDTO usuarioDTO);
+
+UsuarioDTO actualizarImagenPerfil(String userId, String nuevaImagen) throws UsuarioNotFoundException;
+
+Page<UsuarioDTO> obtenerUsuariosSugeridos(String userId, Pageable pageable);
+
 }

@@ -3,6 +3,8 @@ package com.vedruna.vedruna_backend.services;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,5 +56,24 @@ public class UsuarioServiceImpl implements UsuarioService {
         Usuario savedUsuario = usuarioRepository.save(usuario);
         
         return usuarioMapper.toDTO(savedUsuario);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioDTO actualizarImagenPerfil(String userId, String nuevaImagen) throws UsuarioNotFoundException {
+        Usuario usuario = usuarioRepository.findByUserId(userId)
+            .orElseThrow(() -> new UsuarioNotFoundException("Usuario no encontrado"));
+    
+        usuario.setProfileImageUrl(nuevaImagen);
+        usuarioRepository.save(usuario);
+    
+        return usuarioMapper.toDTO(usuario);
+    }
+
+    @Override
+    @Transactional (readOnly = true)
+    public Page<UsuarioDTO> obtenerUsuariosSugeridos(String userId, Pageable pageable) {
+        Page<Usuario> sugerencias = usuarioRepository.encontrarUsuariosNoSeguidos(userId, pageable);
+        return sugerencias.map(usuarioMapper::toDTO);
     }
 }
