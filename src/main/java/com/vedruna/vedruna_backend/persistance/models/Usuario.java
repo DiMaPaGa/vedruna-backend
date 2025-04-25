@@ -43,10 +43,5 @@ public class Usuario implements Serializable{
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-
-    
-
-
-
-    
+  
 }

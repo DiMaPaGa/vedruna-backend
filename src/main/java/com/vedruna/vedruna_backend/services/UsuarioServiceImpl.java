@@ -76,4 +76,11 @@ public class UsuarioServiceImpl implements UsuarioService {
         Page<Usuario> sugerencias = usuarioRepository.encontrarUsuariosNoSeguidos(userId, pageable);
         return sugerencias.map(usuarioMapper::toDTO);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<UsuarioDTO> buscarUsuariosPorNombre(String nombre, Pageable pageable) {
+        Page<Usuario> usuarios = usuarioRepository.buscarPorNombre(nombre, pageable);
+        return usuarios.map(usuarioMapper::toDTO);
+}
 }

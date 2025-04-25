@@ -19,4 +19,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     @Query("SELECT u FROM Usuario u WHERE u.userId != :userId AND u.userId NOT IN (" +
        "SELECT s.id.seguidoId FROM Seguidor s WHERE s.id.seguidorId = :userId AND s.estado = com.vedruna.vedruna_backend.persistance.models.Estado.ACEPTADO)")
     Page<Usuario> encontrarUsuariosNoSeguidos(@Param("userId") String userId, Pageable pageable);
+
+    @Query("SELECT u FROM Usuario u WHERE LOWER(u.givenName) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    Page<Usuario> buscarPorNombre(@Param("nombre") String nombre, Pageable pageable);
 }

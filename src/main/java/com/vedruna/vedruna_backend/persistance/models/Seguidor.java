@@ -45,5 +45,10 @@ public class Seguidor implements Serializable{
     public void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
+
+    public Seguidor(SeguidorId id, Estado estado) {
+        this.id = id;
+        this.estado = estado;
+    }
     
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vedruna.vedruna_backend.dto.SeguidorDTO;
 import com.vedruna.vedruna_backend.exceptions.SeguidorNotFoundException;
+import com.vedruna.vedruna_backend.exceptions.SeguimientoExistenteException;
 import com.vedruna.vedruna_backend.mappers.SeguidorMapper;
 import com.vedruna.vedruna_backend.persistance.models.Estado;
 import com.vedruna.vedruna_backend.persistance.models.Seguidor;
@@ -62,17 +63,27 @@ public class SeguidorServiceImpl implements SeguidorService {
     @Override
     @Transactional
     public void seguirUsuario(String seguidorId, String seguidoId) {
-        SeguidorId id = new SeguidorId(seguidorId, seguidoId);
-
-        if (seguidorRepository.existsById(id)) {
-            throw new SeguidorNotFoundException("Ya existe una solicitud o seguimiento entre estos usuarios.");
+        if (seguidorId.equals(seguidoId)) {
+            throw new IllegalArgumentException("No puedes seguirte a ti mismo");
         }
 
-        Seguidor seguidor = new Seguidor();
-        seguidor.setId(id);
-        seguidor.setEstado(Estado.PENDIENTE); // Inicialmente pendiente, por si es cuenta privada
+        // Verificar si ya existe la relación
+        Optional<Seguidor> existente = seguidorRepository.findByIdSeguidorIdAndIdSeguidoId(seguidorId, seguidoId);
+        if (existente.isPresent()) {
+            throw new SeguimientoExistenteException("Ya existe una relación de seguimiento entre estos usuarios.");
+        }
 
-        seguidorRepository.save(seguidor);
+        // Verificar si el seguido ya sigue al seguidor con estado ACEPTADO
+        Optional<Seguidor> inversa = seguidorRepository.findByIdSeguidorIdAndIdSeguidoId(seguidoId, seguidorId);
+
+        Estado estado = Estado.PENDIENTE;
+
+        if (inversa.isPresent() && inversa.get().getEstado() == Estado.ACEPTADO) {
+            estado = Estado.ACEPTADO; // Relación inversa ya aceptada → nos ahorramos la espera
+        }
+
+        Seguidor nuevo = new Seguidor(new SeguidorId(seguidorId, seguidoId), estado);
+        seguidorRepository.save(nuevo);
     }
 
     @Override

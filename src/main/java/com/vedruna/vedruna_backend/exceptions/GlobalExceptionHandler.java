@@ -64,6 +64,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(SeguimientoExistenteException.class)
+    public ResponseEntity<String> handleSeguimientoExistenteException(SeguimientoExistenteException ex) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT) // 409
+                .body(ex.getMessage());
+    }
+
     
 
     @ExceptionHandler(Exception.class)
