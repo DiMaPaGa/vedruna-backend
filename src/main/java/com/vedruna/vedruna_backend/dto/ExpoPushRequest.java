@@ -1,16 +1,13 @@
 package com.vedruna.vedruna_backend.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class DispositivoDTO {
+public class ExpoPushRequest {
+
     private String expoPushId;
+    private String userId;
     
 }

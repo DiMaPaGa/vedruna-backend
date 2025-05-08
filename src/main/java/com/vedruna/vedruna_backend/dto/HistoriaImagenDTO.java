@@ -1,16 +1,14 @@
 package com.vedruna.vedruna_backend.dto;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DispositivoDTO {
-    private String expoPushId;
-    
+public class HistoriaImagenDTO {
+    private String imagenUrl;
+    private String texto;
+    private Integer orden;
 }

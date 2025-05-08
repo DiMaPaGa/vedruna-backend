@@ -82,5 +82,12 @@ public class UsuarioServiceImpl implements UsuarioService {
     public Page<UsuarioDTO> buscarUsuariosPorNombre(String nombre, Pageable pageable) {
         Page<Usuario> usuarios = usuarioRepository.buscarPorNombre(nombre, pageable);
         return usuarios.map(usuarioMapper::toDTO);
-}
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario obtenerPorUserId(String userId) {
+        return usuarioRepository.findByUserId(userId)
+            .orElseThrow(() -> new UsuarioNotFoundException("Usuario con userId " + userId + " no encontrado."));
+    }
 }

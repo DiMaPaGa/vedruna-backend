@@ -71,6 +71,17 @@ public class GlobalExceptionHandler {
                 .body(ex.getMessage());
     }
 
+    // Maneja excepciones de tipo UsuarioDispositivoException
+    @ExceptionHandler(UsuarioDispositivoException.class)
+    public ResponseEntity<String> handleUsuarioDispositivoException(UsuarioDispositivoException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST); // 400 para errores de cliente
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<String> handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
+    }
+
     
 
     @ExceptionHandler(Exception.class)

@@ -1,5 +1,6 @@
 package com.vedruna.vedruna_backend.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import com.vedruna.vedruna_backend.persistance.models.Estado;
 import com.vedruna.vedruna_backend.persistance.models.Seguidor;
 import com.vedruna.vedruna_backend.persistance.models.SeguidorId;
 import com.vedruna.vedruna_backend.persistance.repositories.SeguidorRepository;
+import com.vedruna.vedruna_backend.persistance.repositories.UsuarioDispositivoRepository;
 
 @Service
 public class SeguidorServiceImpl implements SeguidorService {
@@ -25,6 +27,12 @@ public class SeguidorServiceImpl implements SeguidorService {
 
     @Autowired
     private SeguidorMapper seguidorMapper;
+
+    @Autowired
+    private UsuarioDispositivoRepository usuarioDispositivoRepository;
+
+    @Autowired
+    private NotificacionService notificacionService; 
 
     public Page<SeguidorDTO> obtenerSeguidores(String seguidoId, Estado estado, Pageable pageable) {
         return seguidorRepository
@@ -84,7 +92,20 @@ public class SeguidorServiceImpl implements SeguidorService {
 
         Seguidor nuevo = new Seguidor(new SeguidorId(seguidorId, seguidoId), estado);
         seguidorRepository.save(nuevo);
+
+         // 🟢 Enviar notificación SOLO si es una solicitud pendiente
+         if (estado == Estado.PENDIENTE) {
+            List<String> tokens = usuarioDispositivoRepository.findExpoPushIdsByUserId(seguidoId);
+            if (!tokens.isEmpty()) {
+                notificacionService.enviarNotificacion(
+                    tokens,
+                    "Nueva solicitud de amistad",
+                    "¡Tienes una solicitud de amistad nueva!"
+                );
+            }
+        }
     }
+    
 
     @Override
     @Transactional

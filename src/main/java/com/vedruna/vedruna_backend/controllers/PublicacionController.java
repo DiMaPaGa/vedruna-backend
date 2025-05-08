@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vedruna.vedruna_backend.dto.PublicacionDTO;
 import com.vedruna.vedruna_backend.exceptions.ResourceNotFoundException;
 import com.vedruna.vedruna_backend.services.PublicacionService;
-import com.vedruna.vedruna_backend.services.SeguidorService;
 
 @RestController
 @RequestMapping("/api/publicaciones")

@@ -2,15 +2,14 @@ package com.vedruna.vedruna_backend.persistance.models;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,26 +20,36 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "dispositivos")
-public class Dispositivo implements Serializable {
+@Table(name = "usuario_dispositivo")
+public class UsuarioDispositivo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "expo_push_id", nullable = false, unique = true)
-    private String expoPushId;
+    // Relación con Usuario (por user_id, que es un campo único en la tabla usuarios)
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
+
+    // Relación con Dispositivo
+    @ManyToOne
+    @JoinColumn(name = "dispositivo_id", nullable = false)
+    private Dispositivo dispositivo;
 
     @Column(name = "created_at", nullable = false, updatable = false)
-    private java.time.LocalDateTime createdAt;
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "dispositivo")
-    private List<UsuarioDispositivo> usuarioDispositivos = new ArrayList<>();
 
-
+    public UsuarioDispositivo(Usuario usuario, Dispositivo dispositivo) {
+        this.usuario = usuario;
+        this.dispositivo = dispositivo;
+    }
 }
+    

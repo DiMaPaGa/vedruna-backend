@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.vedruna.vedruna_backend.dto.UsuarioDTO;
 import com.vedruna.vedruna_backend.exceptions.UsuarioNotFoundException;
+import com.vedruna.vedruna_backend.persistance.models.Usuario;
 
 @Service
 public interface UsuarioService {
@@ -20,5 +21,7 @@ UsuarioDTO actualizarImagenPerfil(String userId, String nuevaImagen) throws Usua
 Page<UsuarioDTO> obtenerUsuariosSugeridos(String userId, Pageable pageable);
 
 Page<UsuarioDTO> buscarUsuariosPorNombre(String nombre, Pageable pageable);
+
+Usuario obtenerPorUserId(String userId);
 
 }
