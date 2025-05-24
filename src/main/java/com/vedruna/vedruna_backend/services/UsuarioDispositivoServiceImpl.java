@@ -16,6 +16,9 @@ import com.vedruna.vedruna_backend.persistance.repositories.UsuarioDispositivoRe
 
 import jakarta.persistence.EntityNotFoundException;
 
+/**
+ * Implementación de la interfaz UsuarioDispositivoService.
+ */
 @Service
 public class UsuarioDispositivoServiceImpl implements UsuarioDispositivoService {
     @Autowired
@@ -28,6 +31,13 @@ public class UsuarioDispositivoServiceImpl implements UsuarioDispositivoService 
     @Autowired
     private UsuarioDispositivoMapper usuarioDispositivoMapper; 
 
+    /**
+     * Guarda una nueva relación entre un usuario y un dispositivo si no existe previamente.
+     * 
+     * @param usuario El usuario a asociar con el dispositivo.
+     * @param dispositivo El dispositivo a asociar con el usuario.
+     * @throws UsuarioDispositivoException si la relación ya existe.
+     */
     @Override
     public void guardarRelacionUsuarioDispositivo(Usuario usuario, Dispositivo dispositivo) {
         if (existeRelacion(usuario, dispositivo)) {
@@ -38,9 +48,17 @@ public class UsuarioDispositivoServiceImpl implements UsuarioDispositivoService 
         usuarioDispositivoRepository.save(usuarioDispositivo);
     }
 
+    /**
+     * Obtiene una relación entre un usuario y un dispositivo.
+     * 
+     * @param usuarioId    ID del usuario.
+     * @param dispositivoId ID del dispositivo.
+     * @return DTO con la relación usuario-dispositivo si existe.
+     * @throws EntityNotFoundException si no se encuentra la relación.
+     */
      @Override
     public UsuarioDispositivoDTO obtenerRelacionUsuarioDispositivo(Long usuarioId, Long dispositivoId) {
-        // Buscamos la relación en la base de datos
+        
         Optional<UsuarioDispositivo> usuarioDispositivoOptional = usuarioDispositivoRepository
             .findByUsuarioIdAndDispositivoId(usuarioId, dispositivoId);
         
@@ -51,6 +69,13 @@ public class UsuarioDispositivoServiceImpl implements UsuarioDispositivoService 
         }
     }
 
+    /**
+     * Verifica si ya existe una relación entre un usuario y un dispositivo.
+     * 
+     * @param usuario    Entidad Usuario.
+     * @param dispositivo Entidad Dispositivo.
+     * @return true si la relación existe, false en caso contrario.
+     */
     private boolean existeRelacion(Usuario usuario, Dispositivo dispositivo) {
         // Verificamos si ya existe una relación entre este usuario y dispositivo
         Optional<UsuarioDispositivo> usuarioDispositivo = usuarioDispositivoRepository
@@ -58,6 +83,12 @@ public class UsuarioDispositivoServiceImpl implements UsuarioDispositivoService 
         return usuarioDispositivo.isPresent();
     }
 
+    /**
+     * Obtiene la lista de tokens Expo Push IDs asociados a un usuario dado su userId (campo String único).
+     * 
+     * @param userId User ID único del usuario.
+     * @return Lista de Expo Push IDs asociados a los dispositivos del usuario.
+     */
     @Override
     public List<String> obtenerTokensPorUserId(String userId) {
     return usuarioDispositivoRepository.findExpoPushIdsByUserId(userId);

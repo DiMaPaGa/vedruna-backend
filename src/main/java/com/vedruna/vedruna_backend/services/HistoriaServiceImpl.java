@@ -23,6 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Implementación de la interfaz HistoriaService.
+ */
 @Service
 public class HistoriaServiceImpl implements HistoriaService {
 
@@ -37,6 +40,18 @@ public class HistoriaServiceImpl implements HistoriaService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    
+    /**
+     * Crea una historia con las imágenes y descripciones proporcionadas y la relaciona con el usuario
+     * que la crea.
+     *
+     * Verifica que el usuario que se proporciona exista en la base de datos y lanza una excepción
+     * si no lo encuentra.
+     *
+     * @param requestDTO datos necesarios de la historia a crear
+     * @return historia creada
+     * @throws RuntimeException si el usuario no se encuentra
+     */
     @Override
     @Transactional
     public HistoriaDTO createHistoria(HistoriaRequestDTO requestDTO) {
@@ -56,6 +71,18 @@ public class HistoriaServiceImpl implements HistoriaService {
         return historiaMapper.toDTO(saved);
     }
 
+    
+    /**
+     * Elimina una historia con el ID proporcionado y el ID de usuario Google.
+     * 
+     * Verifica que el usuario que se proporciona sea el autor de la historia y lanza una excepción
+     * si no lo es.
+     * 
+     * @param historiaId el ID de la historia a eliminar.
+     * @param userGoogleId el ID de usuario Google que realiza la eliminación.
+     * @throws HistoriaNotFoundException si la historia no se encuentra.
+     * @throws AccessDeniedException si el usuario no es el autor de la historia.
+     */
     @Override
     @Transactional
     public void deleteHistoria(Long historiaId, String userGoogleId) {
@@ -71,6 +98,11 @@ public class HistoriaServiceImpl implements HistoriaService {
         historiaRepository.delete(historia);
     }
 
+    /**
+     * Obtiene todas las historias activas (no expiradas).
+     *
+     * @return Lista de DTOs de historias activas.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<HistoriaDTO> getAllHistorias() {
@@ -81,6 +113,13 @@ public class HistoriaServiceImpl implements HistoriaService {
             .toList();
     }
 
+    /**
+     * Obtiene una historia por su ID.
+     *
+     * @param historiaId el ID de la historia a obtener.
+     * @return el DTO de la historia obtenida.
+     * @throws HistoriaNotFoundException si la historia no se encuentra.
+     */
     @Override
     @Transactional(readOnly = true)
     public HistoriaDTO getHistoriaById(Long historiaId) {

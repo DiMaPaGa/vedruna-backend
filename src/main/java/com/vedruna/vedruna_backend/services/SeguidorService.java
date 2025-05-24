@@ -8,30 +8,81 @@ import org.springframework.stereotype.Service;
 import com.vedruna.vedruna_backend.dto.SeguidorDTO;
 import com.vedruna.vedruna_backend.persistance.models.Estado;
 
+/**
+ * Servicio para gestionar las relaciones de seguimiento entre usuarios.
+ */
 @Service
 public interface SeguidorService {
-    // Obtener los seguidores de un usuario con estado específico, paginados
+    
+    /**
+     * Obtiene los seguidores de un usuario con un estado específico, paginados.
+     *
+     * @param seguidoId ID del usuario seguido.
+     * @param estado Estado del seguimiento (ej. ACEPTADO, PENDIENTE).
+     * @param pageable Información de paginación.
+     * @return Página con los DTOs de seguidores.
+     */
     Page<SeguidorDTO> obtenerSeguidores(String seguidoId, Estado estado, Pageable pageable);
 
-    // Obtener los usuarios seguidos por un usuario con estado específico, paginados
+    /**
+     * Obtiene los usuarios seguidos por un usuario con un estado específico, paginados.
+     *
+     * @param seguidorId ID del usuario seguidor.
+     * @param estado Estado del seguimiento.
+     * @param pageable Información de paginación.
+     * @return Página con los DTOs de usuarios seguidos.
+     */
     Page<SeguidorDTO> obtenerSeguidos(String seguidorId, Estado estado, Pageable pageable);
 
-    // Verificar si un usuario sigue a otro
+    /**
+     * Verifica si un usuario sigue a otro.
+     *
+     * @param seguidorId ID del usuario seguidor.
+     * @param seguidoId ID del usuario seguido.
+     * @return true si el seguidor sigue al seguido, false en caso contrario.
+     */
     boolean esSeguidor(String seguidorId, String seguidoId);
 
-    // Contar el número de seguidores de un usuario con estado específico
+    /**
+     * Cuenta el número de seguidores de un usuario con un estado específico.
+     *
+     * @param seguidoId ID del usuario seguido.
+     * @param estado Estado del seguimiento.
+     * @return Número de seguidores.
+     */
     long contarSeguidores(String seguidoId, Estado estado);
 
-    // Contar el número de usuarios seguidos por un usuario con estado específico
+    /**
+     * Cuenta el número de usuarios seguidos por un usuario con un estado específico.
+     *
+     * @param seguidorId ID del usuario seguidor.
+     * @param estado Estado del seguimiento.
+     * @return Número de usuarios seguidos.
+     */
     long contarSeguidos(String seguidorId, Estado estado);
 
-    // Seguir a un usuario
+    /**
+     * Inicia el seguimiento de un usuario.
+     *
+     * @param seguidorId ID del usuario que va a seguir.
+     * @param seguidoId ID del usuario a seguir.
+     */
     void seguirUsuario(String seguidorId, String seguidoId);
 
-    // Eliminar un seguimiento
+    /**
+     * Elimina el seguimiento de un usuario.
+     *
+     * @param seguidorId ID del usuario que deja de seguir.
+     * @param seguidoId ID del usuario dejado de seguir.
+     */
     void dejarDeSeguir(String seguidorId, String seguidoId);
 
-    // Aceptar una solicitud de seguimiento
+    /**
+     * Acepta una solicitud de seguimiento.
+     *
+     * @param seguidorId ID del usuario que solicitó seguir.
+     * @param seguidoId ID del usuario que acepta la solicitud.
+     */
     void aceptarSolicitud(String seguidorId, String seguidoId);
     
 }

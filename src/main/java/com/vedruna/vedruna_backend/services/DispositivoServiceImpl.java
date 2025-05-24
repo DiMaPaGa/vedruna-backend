@@ -20,6 +20,9 @@ import com.vedruna.vedruna_backend.persistance.repositories.DispositivoRepositor
 import com.vedruna.vedruna_backend.persistance.repositories.UsuarioDispositivoRepository;
 import com.vedruna.vedruna_backend.persistance.repositories.UsuarioRepository;
 
+/**
+ * Implementación del servicio para la gestión de dispositivos.
+ */
 @Service
 public class DispositivoServiceImpl implements DispositivoService {
 
@@ -35,12 +38,27 @@ public class DispositivoServiceImpl implements DispositivoService {
     @Autowired
     private UsuarioDispositivoRepository usuarioDispositivoRepository;
 
+    /**
+     * Obtiene un dispositivo por su ID.
+     *
+     * @param id ID del dispositivo.
+     * @return Entidad Dispositivo asociada al ID.
+     * @throws RuntimeException si no se encuentra el dispositivo con el ID indicado.
+     */
     @Override
     public Dispositivo obtenerPorId(Long id) {
         return dispositivoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dispositivo no encontrado con id: " + id));  // O cualquier excepción personalizada
     }
 
+    /**
+     * Obtiene un dispositivo por su Expo Push ID o, si no existe, lo crea y lo asocia al usuario dado.
+     *
+     * @param expoPushId el identificador único de Expo Push del dispositivo.
+     * @param userId el identificador único del usuario al que se asociará el dispositivo.
+     * @return un DTO del dispositivo obtenido o creado.
+     * @throws RuntimeException si no se encuentra el usuario con el userId dado o si hay problemas de persistencia.
+     */
     @Override
     @Transactional
     public DispositivoDTO obtenerODarDeAlta(String expoPushId, String userId) {

@@ -17,6 +17,9 @@ import com.vedruna.vedruna_backend.persistance.models.Privacidad;
 import com.vedruna.vedruna_backend.persistance.models.Publicacion;
 import com.vedruna.vedruna_backend.persistance.repositories.PublicacionRepository;
 
+/**
+ * Implementación de la interfaz PublicacionService.
+ */
 @Service
 public class PublicacionServiceImpl implements PublicacionService {
     private static final Logger logger = LoggerFactory.getLogger(PublicacionServiceImpl.class);
@@ -34,9 +37,15 @@ public class PublicacionServiceImpl implements PublicacionService {
     private LikeService likeService;  
 
 
+    /**
+     * Crea una publicación con los datos del DTO recibido.
+     * 
+     * @param publicacionDTO el DTO con los datos para crear la publicación
+     * @return el DTO de la publicación creada
+     */
     @Transactional
-@Override
-public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
+    @Override
+    public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
     logger.info("Datos recibidos: {}", publicacionDTO);
 
     Publicacion publicacion = publicacionMapper.toEntity(publicacionDTO);
@@ -52,6 +61,13 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
 }
 
 
+    /**
+     * Obtiene una publicación por su ID.
+     * 
+     * @param id el ID de la publicación a obtener
+     * @return el DTO de la publicación encontrada
+     * @throws ResourceNotFoundException si la publicación no se encuentra
+     */
     @Transactional(readOnly = true)
     @Override
     public PublicacionDTO obtenerPublicacionPorId(Long id) throws ResourceNotFoundException {
@@ -60,6 +76,13 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
         return publicacionMapper.toDTO(publicacion);
     }
 
+    
+    /**
+     * Obtiene todas las publicaciones creadas por un usuario especifico.
+     * 
+     * @param userId el ID del usuario cuyas publicaciones se desean obtener
+     * @return una lista de DTO de las publicaciones encontradas
+     */
     @Transactional(readOnly = true)
     @Override
     public List<PublicacionDTO> obtenerPublicacionesPorUsuario(String userId) {
@@ -69,6 +92,13 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
                 .toList();
     }
 
+    
+    /**
+     * Obtiene todas las publicaciones que un usuario ha marcado con like.
+     * 
+     * @param userId el ID del usuario cuyas publicaciones se desean obtener
+     * @return una lista de DTO de las publicaciones encontradas
+     */
     @Transactional(readOnly = true)
     @Override
     public List<PublicacionDTO> obtenerPublicacionesConLikePorUsuario(String userId) {
@@ -78,28 +108,31 @@ public PublicacionDTO crearPublicacion(PublicacionDTO publicacionDTO) {
                 .toList();
     }
 
-    // Nuevos métodos para obtener las publicaciones
+    
+    /**
+     * Obtiene todas las publicaciones accesibles para un usuario, incluyendo públicas y privadas
+     * si el usuario es seguidor de la persona autora.
+     * 
+     * @param userId el ID del usuario cuyas publicaciones se desean obtener
+     * @return una lista de DTO de las publicaciones encontradas
+     */
     @Transactional(readOnly = true)
     @Override
     public List<PublicacionDTO> obtenerTodasLasPublicaciones(String userId) {
         List<PublicacionDTO> publicaciones = new ArrayList<>();
-
-        // Obtener publicaciones públicas
+       
         List<Publicacion> publicacionesPublicas = publicacionRepository.findByPrivacidad(Privacidad.PUBLICA);
         publicacionesPublicas.forEach(publicacion -> {
-            // Obtener los likes de la publicación
+           
             List<LikeDTO> likes = likeService.obtenerLikesDePublicacion(publicacion.getId());
-            // Mapear la publicación a DTO
             PublicacionDTO dto = publicacionMapper.toDTO(publicacion);
-            // Añadir los likes al DTO
             dto.setLikes(likes);
             publicaciones.add(dto);
         });
 
-        // Obtener las publicaciones privadas de los usuarios seguidos
         List<Publicacion> publicacionesPrivadas = publicacionRepository.findByPrivacidad(Privacidad.PRIVADA);
         for (Publicacion publicacion : publicacionesPrivadas) {
-            // Si el usuario es seguidor del autor de la publicación, añadirla
+            
             if (seguidorService.esSeguidor(userId, publicacion.getAutor().getUserId()) || publicacion.getAutor().getUserId().equals(userId)) {
                 List<LikeDTO> likes = likeService.obtenerLikesDePublicacion(publicacion.getId());
                 PublicacionDTO dto = publicacionMapper.toDTO(publicacion);

@@ -5,10 +5,18 @@ import org.springframework.stereotype.Component;
 import com.vedruna.vedruna_backend.dto.UsuarioDTO;
 import com.vedruna.vedruna_backend.persistance.models.Usuario;
 
+/**
+ * Mapper para convertir entre la entidad Usuario y su DTO UsuarioDTO.
+ */
 @Component
 public class UsuarioMapper {
 
-     // Convertir modelo Usuario a DTO UsuarioDTO
+     /**
+     * Convierte un objeto Usuario a UsuarioDTO.
+     * 
+     * @param usuario la entidad Usuario
+     * @return el DTO UsuarioDTO o null si el usuario es null
+     */
     public UsuarioDTO toDTO(Usuario usuario) {
         if (usuario == null) {
             return null;
@@ -21,7 +29,12 @@ public class UsuarioMapper {
         );
     }
 
-    // Convertir DTO UsuarioDTO a modelo Usuario
+    /**
+     * Convierte un UsuarioDTO a la entidad Usuario.
+     * 
+     * @param usuarioDTO el DTO UsuarioDTO
+     * @return la entidad Usuario o null si el DTO es null
+     */
     public Usuario toEntity(UsuarioDTO usuarioDTO) {
         if (usuarioDTO == null) {
             return null;

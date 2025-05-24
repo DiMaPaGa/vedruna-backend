@@ -7,36 +7,45 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Clase de configuración de seguridad para la aplicación.
+ * 
+ * Esta clase configura CORS para permitir solicitudes desde el frontend
+ * y deshabilita temporalmente la seguridad HTTP para facilitar pruebas.
+ * 
+ * Implementa WebMvcConfigurer para configurar CORS globalmente.
+ */
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer{
 
+    /**
+     * Configura los mapeos CORS para permitir solicitudes desde el frontend.
+     * 
+     * @param registry el registro para añadir las configuraciones CORS
+     */
     @Override
     public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**") // Permite todas las rutas
-            .allowedOrigins("http://localhost:3000") // Cambia al origen de tu frontend
-            .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos HTTP permitidos
+            .allowedOrigins("http://localhost:3000") // Cambia al origen del frontend
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Métodos HTTP permitidos
             .allowedHeaders("*") // Permite todos los encabezados
             .allowCredentials(true); // Permite cookies o credenciales
     }
 
+    /**
+     * Configura la cadena de filtros de seguridad HTTP.
+     * 
+     * Actualmente deshabilita CSRF y permite todas las solicitudes para facilitar pruebas.
+     * 
+     * @param http el objeto HttpSecurity para configurar la seguridad web
+     * @return el SecurityFilterChain configurado
+     * @throws Exception en caso de errores de configuración
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable()) // Desactiva protección CSRF
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/usuarios/**").permitAll() // Permitir acceso a /api/usuarios
-                .requestMatchers("/api/publicaciones/**").permitAll() // Permitir acceso a /api/publicaciones
-                .requestMatchers("/api/seguidores/**").permitAll() // Permitir acceso a /api/seguidores
-                .requestMatchers("/api/likes/**").permitAll() // Permitir acceso a /api/likes
-                .requestMatchers("/api/historias/**").permitAll() // Permitir acceso a /api/historias
-                .requestMatchers("/api/dispositivos/**").permitAll() // Permitir acceso a /api/dispositivos
-                .requestMatchers("/api/comentarios/**").permitAll() // Permitir acceso a /api/comentarios
-                .requestMatchers("/api/tickets/**").permitAll() // Permitir acceso a /api/tickets
-                .requestMatchers("/api/email/enviar").permitAll()
-                .requestMatchers("/api/usuarios-dispositivos/**").permitAll()
-                .requestMatchers("/api/cleanup/**").permitAll() 
-                .anyRequest().authenticated() // Requiere autenticación en otros endpoints
-            );
+        // Deshabilita toda la seguridad para pruebas
+        http.csrf().disable().authorizeRequests().anyRequest().permitAll();
         return http.build();
     }
 }
+        

@@ -22,6 +22,12 @@ import com.vedruna.vedruna_backend.dto.UsuarioDTO;
 import com.vedruna.vedruna_backend.exceptions.UsuarioNotFoundException;
 import com.vedruna.vedruna_backend.services.UsuarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
@@ -31,23 +37,54 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    // Obtener un usuario por Google ID
+    @Operation(summary = "Obtener un usuario por su Google ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario encontrado",
+                     content = @Content(schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @GetMapping("/{userId}")
     public ResponseEntity<UsuarioDTO> obtenerUsuarioPorGoogleId(@PathVariable String userId) throws UsuarioNotFoundException {
         UsuarioDTO usuarioDTO = usuarioService.obtenerUsuarioPorGoogleId(userId);
         return new ResponseEntity<>(usuarioDTO, HttpStatus.OK);
     }
 
+    @Operation(summary = "Actualizar imagen de perfil de un usuario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Imagen actualizada correctamente",
+                     content = @Content(schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
+    })
     @PutMapping("/{userId}")
-    public ResponseEntity<UsuarioDTO> actualizarImagenPerfil(@PathVariable String userId, @RequestBody Map<String, String> body) throws UsuarioNotFoundException {
-    String nuevaImagen = body.get("profile_picture");
-    UsuarioDTO actualizado = usuarioService.actualizarImagenPerfil(userId, nuevaImagen);
-    return new ResponseEntity<>(actualizado, HttpStatus.OK);
-}
+    public ResponseEntity<UsuarioDTO> actualizarImagenPerfil(
+        @PathVariable String userId, 
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Nuevo URL de imagen de perfil",
+            required = true,
+            content = @Content(schema = @Schema(example = "{\"profile_picture\": \"http://example.com/image.jpg\"}"))
+        )
+        @RequestBody Map<String, String> body) throws UsuarioNotFoundException {
 
-    // Crear un nuevo usuario
+        String nuevaImagen = body.get("profile_picture");
+        UsuarioDTO actualizado = usuarioService.actualizarImagenPerfil(userId, nuevaImagen);
+        return new ResponseEntity<>(actualizado, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Crear un nuevo usuario")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Usuario creado correctamente",
+                     content = @Content(schema = @Schema(implementation = UsuarioDTO.class))),
+        @ApiResponse(responseCode = "200", description = "El usuario ya existía, se devuelve el existente")
+    })
     @PostMapping
-    public ResponseEntity<UsuarioDTO> crearUsuario(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> crearUsuario(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Datos del usuario a crear",
+            required = true,
+            content = @Content(schema = @Schema(implementation = UsuarioDTO.class))
+        )
+        @RequestBody UsuarioDTO usuarioDTO) {
+            
         logger.info("Datos recibidos en el POST /api/usuarios: {}", usuarioDTO);
 
         try{
@@ -59,13 +96,17 @@ public class UsuarioController {
             return new ResponseEntity<>(usuarioExistente, HttpStatus.OK);
         } catch (UsuarioNotFoundException e) {
             logger.info("El usuario no existe en la base de datos, se registrará.");
-
-            //Crear el usuario
             UsuarioDTO creadoUsuario = usuarioService.crearUsuario(usuarioDTO);
             return new ResponseEntity<>(creadoUsuario, HttpStatus.CREATED);
         }
     }
 
+
+    @Operation(summary = "Obtener sugerencias de usuarios para seguir")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Sugerencias encontradas",
+                     content = @Content(schema = @Schema(implementation = UsuarioDTO.class)))
+    })
     @GetMapping("/{userId}/sugerencias")
     public ResponseEntity<Page<UsuarioDTO>> sugerenciasUsuarios(
             @PathVariable String userId,
@@ -75,6 +116,11 @@ public class UsuarioController {
         return new ResponseEntity<>(sugerencias, HttpStatus.OK);
     }
 
+    @Operation(summary = "Buscar usuarios por nombre")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuarios encontrados",
+                     content = @Content(schema = @Schema(implementation = UsuarioDTO.class)))
+    })
     @GetMapping("/buscar")
     public ResponseEntity<Page<UsuarioDTO>> buscarUsuarios(
         @RequestParam(defaultValue = "") String nombre,

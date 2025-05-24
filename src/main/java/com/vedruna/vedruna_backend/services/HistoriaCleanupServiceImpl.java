@@ -10,14 +10,25 @@ import org.springframework.stereotype.Service;
 import com.vedruna.vedruna_backend.persistance.models.Historia;
 import com.vedruna.vedruna_backend.persistance.repositories.HistoriaRepository;
 
+/**
+ * Implementación del servicio para la limpieza de historias expiradas.
+ * Esta clase contiene la lógica para eliminar historias que hayan expirado,
+ * ejecutándose automáticamente todos los días a medianoche.
+ */
 @Service
 public class HistoriaCleanupServiceImpl implements HistoriaCleanupService {
 
     @Autowired
     private HistoriaRepository historiaRepository;
 
-    // Tarea programada para limpiar historias expiradas
-    @Scheduled(cron = "0 0 0 * * *")  // Se ejecuta a las 00:00 todos los días
+    /**
+     * Tarea programada para limpiar las historias expiradas.
+     * Se ejecuta a las 00:00 todos los días.
+     * 
+     * Este método obtiene la fecha y hora actuales, consulta todas las historias
+     * cuya fecha de expiración ya pasó y las elimina de la base de datos.
+     */
+    @Scheduled(cron = "0 0 0 * * *")  
     public void limpiarHistoriasExpiradas() {
         // Obtener la fecha y hora actuales
         LocalDateTime ahora = LocalDateTime.now();

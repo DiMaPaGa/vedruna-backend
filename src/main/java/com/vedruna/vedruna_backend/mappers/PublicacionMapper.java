@@ -15,12 +15,14 @@ import com.vedruna.vedruna_backend.persistance.models.Publicacion;
 import com.vedruna.vedruna_backend.persistance.models.Usuario;
 import com.vedruna.vedruna_backend.persistance.repositories.UsuarioRepository;
 
-
+/**
+ * Mapper para convertir entre entidad Publicacion y sus DTOs.
+ */
 @Component
 public class PublicacionMapper {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;  // Inyectar el repositorio de Usuario
+    private UsuarioRepository usuarioRepository; 
 
     @Autowired
     private LikeMapper likeMapper;
@@ -28,17 +30,23 @@ public class PublicacionMapper {
     @Autowired
     private ComentarioMapper comentarioMapper;
 
+    /**
+     * Convierte una entidad Publicacion a su DTO.
+     *
+     * @param publicacion la entidad Publicacion a convertir
+     * @return el DTO correspondiente con autor, likes y comentarios
+     */
     public PublicacionDTO toDTO(Publicacion publicacion) {
         PublicacionDTO dto = new PublicacionDTO();
         dto.setId(publicacion.getId());
         
-        // Mapeo del autor (usuario) de la publicación desde la entidad
+        // Mapear autor a UsuarioDTO
         UsuarioDTO autorDTO = new UsuarioDTO();
-        autorDTO.setUserId(publicacion.getAutor().getUserId());  // Obtención directa del autor
+        autorDTO.setUserId(publicacion.getAutor().getUserId());
         autorDTO.setEmail(publicacion.getAutor().getEmail());
         autorDTO.setGivenName(publicacion.getAutor().getGivenName());
         autorDTO.setProfileImageUrl(publicacion.getAutor().getProfileImageUrl());
-        dto.setAutor(autorDTO); // Establecer el autor DTO en la publicación DTO
+        dto.setAutor(autorDTO); 
         
         dto.setImageUrl(publicacion.getImageUrl());
         dto.setTitulo(publicacion.getTitulo());
@@ -46,7 +54,7 @@ public class PublicacionMapper {
         dto.setPrivacidad(publicacion.getPrivacidad());
         dto.setCreatedAt(publicacion.getCreatedAt());
 
-        // Mapeo de los likes
+        // Mapear likes si existen
         List<LikeDTO> likeDTOs = (publicacion.getLikes() != null) 
             ? publicacion.getLikes().stream()
                 .map(likeMapper::toDTO)
@@ -54,7 +62,7 @@ public class PublicacionMapper {
             : new ArrayList<>();
         dto.setLikes(likeDTOs);
 
-        // Mapeo de los comentarios
+        // Mapear comentarios si existen
         if (publicacion.getComentarios() != null) {
             dto.setComentarios(publicacion.getComentarios().stream()
                 .map(comentarioMapper::toDTO)
@@ -64,6 +72,13 @@ public class PublicacionMapper {
         return dto;
     }
 
+    /**
+     * Convierte un DTO PublicacionDTO a la entidad Publicacion.
+     *
+     * @param dto el DTO con los datos para crear/actualizar la entidad
+     * @return la entidad Publicacion correspondiente
+     * @throws UsuarioNotFoundException si no se encuentra el usuario por userId
+     */
     public Publicacion toEntity(PublicacionDTO dto) {
         Publicacion publicacion = new Publicacion();
         publicacion.setId(dto.getId());

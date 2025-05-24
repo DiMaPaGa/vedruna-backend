@@ -10,13 +10,21 @@ import com.vedruna.vedruna_backend.persistance.models.Ticket;
 import com.vedruna.vedruna_backend.persistance.models.Usuario;
 import com.vedruna.vedruna_backend.persistance.repositories.UsuarioRepository;
 
+/**
+ * Mapper para convertir entre la entidad Ticket y su DTO correspondiente.
+ */
 @Component
 public class TicketMapper {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;  // Repositorio para obtener al usuario
+    private UsuarioRepository usuarioRepository;  
 
-    // Convertir de Ticket a TicketDTO
+    /**
+     * Convierte una entidad Ticket a un TicketDTO.
+     *
+     * @param ticket la entidad Ticket a convertir
+     * @return el DTO correspondiente, o null si el ticket es null
+     */
     public TicketDTO ticketToTicketDTO(Ticket ticket) {
         if (ticket == null) {
             return null;
@@ -25,7 +33,7 @@ public class TicketMapper {
         TicketDTO ticketDTO = new TicketDTO();
         ticketDTO.setId(ticket.getId());
         
-        // Mapear el usuario
+        // Mapeo del autor
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setUserId(ticket.getAutor().getUserId());
         usuarioDTO.setEmail(ticket.getAutor().getEmail());
@@ -43,7 +51,13 @@ public class TicketMapper {
         return ticketDTO;
     }
 
-    // Convertir de TicketDTO a Ticket
+    /**
+     * Convierte un TicketDTO a la entidad Ticket.
+     *
+     * @param ticketDTO el DTO a convertir
+     * @return la entidad Ticket creada a partir del DTO, o null si el DTO es null
+     * @throws UsuarioNotFoundException si no se encuentra el usuario en la base de datos
+     */
     public Ticket ticketDTOToTicket(TicketDTO ticketDTO) {
         if (ticketDTO == null) {
             return null;
@@ -52,11 +66,11 @@ public class TicketMapper {
         Ticket ticket = new Ticket();
         ticket.setId(ticketDTO.getId());
 
-        // Obtener el 'Usuario' a partir del 'userId' del DTO
-        Usuario usuario = usuarioRepository.findByUserId(ticketDTO.getAutor().getUserId())
-            .orElseThrow(() -> new UsuarioNotFoundException(ticketDTO.getAutor().getUserId())); // Aquí puedes lanzar tu propia excepción si lo deseas
         
-        ticket.setAutor(usuario);  // Establecer el autor encontrado
+        Usuario usuario = usuarioRepository.findByUserId(ticketDTO.getAutor().getUserId())
+            .orElseThrow(() -> new UsuarioNotFoundException(ticketDTO.getAutor().getUserId())); 
+        
+        ticket.setAutor(usuario);  
         
         ticket.setEquipoClase(ticketDTO.getEquipoClase());
         ticket.setTitulo(ticketDTO.getTitulo());
